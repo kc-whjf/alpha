@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/kc-whjf/alpha/alog"
+	"github.com/kc-whjf/alpha/autil/ahttp/request"
 	"go.uber.org/zap"
 	gormlogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
-	"github.com/alphaframework/alpha/alog"
-	"github.com/alphaframework/alpha/autil/ahttp/request"
 )
 
 type Config struct {

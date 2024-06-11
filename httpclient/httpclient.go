@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alphaframework/alpha/aconfig"
-	"github.com/alphaframework/alpha/alog"
 	"github.com/go-resty/resty/v2"
+	"github.com/kc-whjf/alpha/aconfig"
+	"github.com/kc-whjf/alpha/alog"
 	"go.uber.org/zap"
 )
 

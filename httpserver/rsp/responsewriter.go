@@ -2,7 +2,7 @@ package rsp
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/alphaframework/alpha/aerror"
+	"github.com/kc-whjf/alpha/aerror"
 )
 
 func Error(c *gin.Context, err error) {

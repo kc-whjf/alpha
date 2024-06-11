@@ -5,7 +5,7 @@ import (
 	"crypto/md5"
 	"crypto/rand"
 	"encoding/base64"
-	"github.com/alphaframework/alpha/autil/acrypto"
+	"github.com/kc-whjf/alpha/autil/acrypto"
 )
 
 func getDerivedKey(password string, salt []byte, count, l int) ([]byte, error) {

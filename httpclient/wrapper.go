@@ -3,11 +3,11 @@ package httpclient
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/alphaframework/alpha/aerror"
+	"github.com/kc-whjf/alpha/aerror"
 	"net/http"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/alphaframework/alpha/autil"
+	"github.com/kc-whjf/alpha/autil"
 )
 
 var (

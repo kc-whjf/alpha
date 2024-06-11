@@ -3,8 +3,8 @@ package ginwrapper
 import (
 	"time"
 
-	"github.com/alphaframework/alpha/alog"
 	"github.com/gin-gonic/gin"
+	"github.com/kc-whjf/alpha/alog"
 )
 
 func defaultHealthHandler(c *gin.Context) {

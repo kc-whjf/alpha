@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/alphaframework/alpha/alog"
-	"github.com/alphaframework/alpha/autil"
-	"github.com/alphaframework/alpha/autil/ahttp"
 	"github.com/go-resty/resty/v2"
+	"github.com/kc-whjf/alpha/alog"
+	"github.com/kc-whjf/alpha/autil"
+	"github.com/kc-whjf/alpha/autil/ahttp"
 	"go.uber.org/zap"
 )
 

@@ -1,4 +1,4 @@
-module github.com/alphaframework/alpha
+module github.com/kc-whjf/alpha
 
 go 1.15
 

@@ -1,2 +1,3 @@
 # alpha
-A web framework for golang
+
+A web framework for golang.

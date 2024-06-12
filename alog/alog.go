@@ -40,6 +40,7 @@ func InitLogger(applicationName, directory, level, format string) error {
 	if directory == "" {
 		return fmt.Errorf("directory is required")
 	}
+	logPath := directory + "/" + applicationName + ".log"
 
 	if level == "" {
 		level = defaultLogLevel
@@ -48,22 +49,13 @@ func InitLogger(applicationName, directory, level, format string) error {
 		format = defaultLogFormat
 	}
 
-	var l zapcore.Level
-	if err := l.Set(level); err != nil {
-		return err
+	output := lumberjack.Logger{
+		Filename:   logPath,
+		MaxSize:    512, // MB
+		MaxAge:     240, // day
+		MaxBackups: 100,
+		Compress:   true,
 	}
-
-	getWriter := func(level string) *lumberjack.Logger {
-		logPath := directory + "/" + applicationName + "." + level + ".log"
-		return &lumberjack.Logger{
-			Filename:   logPath,
-			MaxSize:    512, // MB
-			MaxAge:     240, // day
-			MaxBackups: 100,
-			Compress:   true,
-		}
-	}
-
 	encoderConfig := zapcore.EncoderConfig{
 		MessageKey:     "msg",
 		LevelKey:       "level",
@@ -79,24 +71,24 @@ func InitLogger(applicationName, directory, level, format string) error {
 		EncodeName:     zapcore.FullNameEncoder,
 	}
 
+	var l zapcore.Level
+	if err := l.Set(level); err != nil {
+		return err
+	}
+	atomicLevel := zap.NewAtomicLevel()
+	atomicLevel.SetLevel(l)
+	var writes = []zapcore.WriteSyncer{zapcore.AddSync(&output)}
 	encoder := zapcore.NewConsoleEncoder(encoderConfig)
 	if format == "json" {
 		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 		encoderConfig.EncodeLevel = zapcore.LowercaseLevelEncoder
 		encoder = zapcore.NewJSONEncoder(encoderConfig)
 	}
-
-	var cores []zapcore.Core
-	for l <= zapcore.FatalLevel {
-		var writers = []zapcore.WriteSyncer{zapcore.AddSync(getWriter(l.String()))}
-		cores = append(cores, zapcore.NewCore(
-			encoder,
-			zapcore.NewMultiWriteSyncer(writers...),
-			zap.NewAtomicLevelAt(l),
-		))
-		l++
-	}
-	core := zapcore.NewTee(cores...)
+	core := zapcore.NewCore(
+		encoder,
+		zapcore.NewMultiWriteSyncer(writes...),
+		atomicLevel,
+	)
 
 	caller := zap.AddCaller()
 	development := zap.Development()

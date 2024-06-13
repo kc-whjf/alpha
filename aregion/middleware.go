@@ -35,11 +35,11 @@ func MustNewRestyWith(portName aconfig.PortName, appConfig *aconfig.Application,
 	return client
 }
 
-func AddCrossRegionMiddleware(client *resty.Client) {
-	client.OnBeforeRequest(crossRegion)
+func AddCrossRegionMiddleware(client *resty.Client) *resty.Client {
+	return client.OnBeforeRequest(crossRegionMiddleware)
 }
 
-func crossRegion(c *resty.Client, req *resty.Request) (err error) {
+func crossRegionMiddleware(c *resty.Client, req *resty.Request) (err error) {
 	opsRegion := req.Header.Get("X-Ops-Region")
 	if len(opsRegion) == 0 {
 		return

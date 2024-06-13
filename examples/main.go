@@ -48,7 +48,7 @@ func main() {
 	}
 
 	go func() {
-		for range time.Tick(10 * time.Second) {
+		for range time.Tick(1 * time.Minute) {
 			list, _ := aregion.GetRegionList(Ctx)
 			alog.CtxSugar(Ctx).Info("region count:", len(list))
 		}

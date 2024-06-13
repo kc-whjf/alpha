@@ -1,0 +1,66 @@
+api_version: app.i/v1
+kind: application
+metadata:
+  name: plan-apiserver
+spec:
+  primary_ports:
+    main:
+      interface:
+        name: plan.i
+      location:
+        address: http://plan-apiserver.innerapi.sdns.internal-bigdata.com
+        port: 80
+  secondary_ports:
+    db:
+      interface:
+        name: mysql.i
+      matched_primary_port:
+        block_name: plan-apiserver-mysql.b
+        location:
+          address: mysql-ops.sdns.internal-bigdata.com
+          port: 13306
+      options:
+        user: plan_rw
+        password: ENC(BMmHghIiFRls4vXl6nII/apSpdiY7wnJ3BknridJeA8=)
+        database: ops_plan
+    apphub:
+      interface:
+        name: app.i
+      matched_primary_port:
+        application_name: apphub-apiserver.b
+        location:
+          address: http://apphub-apiserver.innerapi.sdns.internal-bigdata.com
+          port: 80
+    cross_region:
+      interface:
+        name: cross_region.i
+      matched_primary_port:
+        application_name: ops-console.b
+        location:
+          address: http://ops-console.sdns.internal-bigdata.com
+          port: 80
+      options:
+        auth_server:
+          location:
+            address: http://192.168.97.2 #http://authserver.internal-bigdata.com
+            port: 3000 #8080
+            path: /mock/6/apis/app.i/auth/key #/auth/key
+        region_server:
+          location:
+            address: http://192.168.97.2 #http://operation.internal-bigdata.com
+            port: 3000 #8089
+            path: /mock/6/apis/app.i/op/region #/op/region
+            ak: ops-tools-upgrade
+            #2ea7f762-4f45-11eb-80b3-00059a3c7a00
+            sk: ENC(Uv38ByGCZU+Jql1KLKDNTc5UCu9hTRZbgxSnjfYBCh5uaUvyVon2dDo1bMsIG1cw)
+  custom_config:
+    serving:
+      address:
+      port: 8036
+    common:
+      encryptor:
+        s: KSC_bigdata159@ccb.com
+      log:
+        level: debug
+        directory: examples/log
+        format: console

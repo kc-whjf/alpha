@@ -1,6 +1,7 @@
 package ginwrapper
 
 import (
+	"github.com/kc-whjf/alpha/aregion"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -57,4 +58,11 @@ func addHealthEndpoints(r *gin.Engine, options *Options) {
 	r.GET("/livez", options.LivezHandler)
 	r.GET("/readyz", options.ReadyzHandler)
 	r.GET("/configz", options.ConfigzHandler)
+	r.GET("/clearz", clearzHandler)
+}
+
+// clear all framework cache
+func clearzHandler(c *gin.Context) {
+	aregion.ClearCache()
+	c.JSON(200, gin.H{"status": 200, "message": "success"})
 }

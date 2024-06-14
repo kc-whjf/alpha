@@ -5,27 +5,29 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/kc-whjf/alpha/aconfig"
-	"github.com/kc-whjf/alpha/alog"
-	"github.com/kc-whjf/alpha/aregion"
-	"github.com/kc-whjf/alpha/autil/acrypto/pbe"
-	"github.com/kc-whjf/alpha/ginwrapper"
-	"regexp"
-	"time"
-
 	_ "github.com/kc-whjf/alpha/aconfig"
 	_ "github.com/kc-whjf/alpha/aerror"
+	"github.com/kc-whjf/alpha/alog"
 	_ "github.com/kc-whjf/alpha/alog"
 	_ "github.com/kc-whjf/alpha/alog/gormwrapper"
+	"github.com/kc-whjf/alpha/aregion"
 	_ "github.com/kc-whjf/alpha/autil"
+	"github.com/kc-whjf/alpha/autil/acrypto/pbe"
 	_ "github.com/kc-whjf/alpha/autil/ahttp"
 	_ "github.com/kc-whjf/alpha/autil/ahttp/request"
 	_ "github.com/kc-whjf/alpha/database"
+	"github.com/kc-whjf/alpha/ginwrapper"
 	_ "github.com/kc-whjf/alpha/ginwrapper"
+	"github.com/kc-whjf/alpha/httpclient"
 	_ "github.com/kc-whjf/alpha/httpclient"
 	_ "github.com/kc-whjf/alpha/httpserver/rsp"
+	"net/http/httputil"
+	"regexp"
 )
 
 var Ctx = context.Background()
+
+type M map[string]string
 
 func main() {
 	fmt.Println("Hello world")
@@ -47,12 +49,30 @@ func main() {
 		panic(err)
 	}
 
-	go func() {
-		for range time.Tick(1 * time.Minute) {
-			list, _ := aregion.GetRegionList(Ctx)
-			alog.CtxSugar(Ctx).Info("region count:", len(list))
-		}
-	}()
+	//go func() {
+	//	for range time.Tick(1 * time.Minute) {
+	//		list, _ := aregion.GetRegionList(Ctx)
+	//		alog.CtxSugar(Ctx).Info("region count:", len(list))
+	//	}
+	//}()
+
+	emResty, err := aregion.NewRestyWith("em", serverConfig.ThisApplication, "http://")
+	if err != nil {
+		panic(err)
+	}
+	wrapper := httpclient.Wrapper(emResty.R().
+		SetHeaders(M{"X-A": "a", "X-B": "b"}).
+		//SetHeader("X-Ops-Region", "64000001").
+		SetHeader("X-Ops-Region", "60000005").
+		SetQueryParams(M{"b": "2", "c": "3"}).
+		Get("/mock/6/apis/app.i/em/projects?a=1"))
+
+	if wrapper.FuncError != nil {
+		panic(wrapper.FuncError)
+	}
+	byt, _ := httputil.DumpResponse(wrapper.Response.RawResponse, false)
+	fmt.Println(string(byt))
+	fmt.Println(wrapper.Response.String())
 
 	apiServer, err := NewAPIServer(serverConfig)
 	if err != nil {

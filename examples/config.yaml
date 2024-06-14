@@ -31,6 +31,14 @@ spec:
         location:
           address: http://apphub-apiserver.innerapi.sdns.internal-bigdata.com
           port: 80
+    em:
+      interface:
+        name: em.i
+      matched_primary_port:
+        application_name: em.b
+        location:
+          address: http://em.internal-bigdata.com
+          port: 80
     cross_region:
       interface:
         name: cross_region.i

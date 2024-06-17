@@ -63,6 +63,7 @@ var (
 	regionList     []*Region // cache region list
 	commonResty    *resty.Client
 	lock           sync.Mutex
+	initialized    bool
 )
 
 func InitCrossRegionConfig(application *aconfig.Application) error {
@@ -96,6 +97,8 @@ func InitCrossRegionConfig(application *aconfig.Application) error {
 		SetRetryMaxWaitTime(5 * time.Second)
 
 	go syncRegionListBackground()
+
+	initialized = true
 	return nil
 }
 
@@ -124,6 +127,11 @@ func ClearCache() {
 }
 
 func getRegionListInternal(ctx context.Context) (list []*Region, err error) {
+	if !initialized {
+		err = errors.New("请先调用 aregion.InitCrossRegionConfig(...) 初始化")
+		return
+	}
+
 	var authKey string
 	if err = httpclient.ExecuteHttp(ctx, commonResty,
 		&httpclient.HttpParams{Method: "GET", Url: normalizeUrl(config.AuthServer.Location)},
@@ -165,7 +173,7 @@ func getRegionListInternal(ctx context.Context) (list []*Region, err error) {
 		}
 		for _, az := range r.AzList {
 			if az.PropMap != nil {
-				az.Default = r.PropMap.GetStringIgnoreCase("default") == "1"
+				az.Default = az.PropMap.GetStringIgnoreCase("default") == "1"
 			}
 		}
 	}
